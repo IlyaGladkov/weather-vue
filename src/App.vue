@@ -1,72 +1,55 @@
-<script>
-    export default {
-        data() {
-            return {
-                city: '',
-                error: '',
-                info: null
-            }
-        },
-        computed: {
-            cityName() {
-                return `"${this.city}"`
-            }
-        },
-        methods: {
-            getWeather() {
-                if (this.city.length < 2) {
-                    this.error = 'Короткое название города!'
-                    return false
-                }
+<script setup>
+import { computed, ref } from 'vue';
+import getWeather from './getWeather'
 
-                this.error = ''
+let weatherRef = ref({
+    city: '',
+    error: '',
+    info: null
+})
 
-                fetch(`https://api.openweathermap.org/data/2.5/weather?q=${this.city}&units=metric&lang=ru&appid=${import.meta.env.VITE_API_TOKEN}`)
-                    .then(res => res.json())
-                    .then(data => this.info = data)
-            }
-        },
-         
-    }
+let cityName = computed(() => {
+    return `'${weatherRef.value.city}'`
+})
 </script>
 
 <template>
     <div class="card">
         <h1>Погода</h1>
-        <p>{{ city === '' ? '' : cityName}}</p>
+        <p>{{ weatherRef.city === '' ? '' : cityName}}</p>
         <div>
             <input 
                 type="text" 
                 placeholder="Введите город"
-                v-model="city"
+                v-model="weatherRef.city"
             >
-            <button @click="getWeather()" role="button">Найти</button>
+            <button @click="getWeather(weatherRef)" role="button">Найти</button>
         </div>
-        <div v-show="info != null">
+        <div v-show="weatherRef.info != null">
             <table>
                 <tr>
                     <td>Прогноз</td>
-                    <td>{{ info?.weather[0].description }}</td>
+                    <td>{{ weatherRef.info?.weather[0].description }}</td>
                 </tr>
                 <tr>
                     <td>Температура</td>
-                    <td>{{ Math.round(info?.main.temp) }}&#8451;</td>
+                    <td>{{ Math.round(weatherRef.info?.main.temp) }}&#8451;</td>
                 </tr>
                 <tr>
                     <td>Макс. температура</td>
-                    <td>{{ Math.round(info?.main.temp_max) }}&#8451;</td>
+                    <td>{{ Math.round(weatherRef.info?.main.temp_max) }}&#8451;</td>
                 </tr>
                 <tr>
                     <td>Мин. температура</td>
-                    <td>{{ Math.round(info?.main.temp_min) }}&#8451;</td>
+                    <td>{{ Math.round(weatherRef.info?.main.temp_min) }}&#8451;</td>
                 </tr>
                 <tr>
                     <td>Влажность</td>
-                    <td>{{ info?.main.humidity }}%</td>
+                    <td>{{ weatherRef.info?.main.humidity }}%</td>
                 </tr>
             </table>
         </div>
-        <p class="error">{{ error }}</p>
+        <p class="error">{{ weatherRef.error }}</p>
     </div>
 </template>
 
