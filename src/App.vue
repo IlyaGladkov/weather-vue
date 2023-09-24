@@ -22,6 +22,7 @@ let cityName = computed(() => {
                 type="text" 
                 placeholder="Введите город"
                 v-model="weatherRef.city"
+                @keyup.enter="getWeather(weatherRef)"
             >
             <button @click="getWeather(weatherRef)" role="button">Найти</button>
         </div>
